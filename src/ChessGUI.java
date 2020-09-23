@@ -22,6 +22,7 @@ public class ChessGUI {
     };
     public static final int BLACK = 0, WHITE = 1;
 
+    public Icon previousIcon;
     ChessGUI() {
         initializeGui();
     }
@@ -94,11 +95,35 @@ public class ChessGUI {
         boardConstrain.add(chessBoard);
         gui.add(boardConstrain);
 
+        Action newPieceAction = new AbstractAction("PieceAction") {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton button = (JButton) e.getSource();
+                //System.out.println("e = " + e.getActionCommand());
+
+                if(previousIcon==null){
+                    if(button.getIcon()!=null) {
+                        System.out.println("button = " + button.getActionCommand());
+                        previousIcon = button.getIcon();
+                        button.setIcon(null);
+                    }else{
+                        previousIcon = null;
+                    }
+                }else{
+                    button.setIcon(previousIcon);
+                    previousIcon = null;
+                }
+            }
+        };
+
         // create the chess board squares
         Insets buttonMargin = new Insets(0, 0, 0, 0);
         for (int ii = 0; ii < chessBoardSquares.length; ii++) {
             for (int jj = 0; jj < chessBoardSquares[ii].length; jj++) {
                 JButton b = new JButton();
+                b.setActionCommand(ii +"-"+jj +"");
+                b.addActionListener(newPieceAction);
                 b.setMargin(buttonMargin);
                 // our chess pieces are 64x64 px in size, so we'll
                 // 'fill this in' using a transparent icon..
@@ -169,7 +194,6 @@ public class ChessGUI {
         for (int ii = 0; ii < STARTING_ROW.length; ii++) {
             chessBoardSquares[ii][0].setIcon(new ImageIcon(
                     chessPieceImages[BLACK][STARTING_ROW[ii]]));
-
         }
         for (int ii = 0; ii < STARTING_ROW.length; ii++) {
             chessBoardSquares[ii][1].setIcon(new ImageIcon(
